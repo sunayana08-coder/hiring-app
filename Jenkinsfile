@@ -15,8 +15,8 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                withCredentials([string(credentialsId: 'docker_ID', variable: 'HUB_PASSWORD')]) {
-                    sh "docker login -u sunayana09 -p ${HUB_PASSWORD}"
+                withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'Hub_Psswd', usernameVariable: 'Docker_ID')]) {
+                    sh "docker login -u sunayana09 -p ${Hub_Psswd}"
                     sh "docker push sunayana09/hiring-app:$BUILD_NUMBER"
                 }
             }
@@ -29,7 +29,7 @@ pipeline {
         stage('Update K8S manifest & push to Repo'){
             steps {
                 script{
-                   withCredentials([usernamePassword(credentialsId: 'GIT_HUB_SERVER', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) { 
+                   withCredentials([usernamePassword(credentialsId: 'Github', passwordVariable: 'Git_Passwd', usernameVariable: 'Git_User')]) { 
                         sh '''
                         cat /var/lib/jenkins/workspace/$JOB_NAME/dev/deployment.yaml
                         sed -i "s/5/${BUILD_NUMBER}/g" /var/lib/jenkins/workspace/$JOB_NAME/dev/deployment.yaml
@@ -37,7 +37,7 @@ pipeline {
                         git add .
                         git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
                         git remote -v
-                        git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/sunayana08-coder/Hiring-app-argocd.git main
+                        git push https://$Git_User:$Git_Passwd@github.com/sunayana08-coder/Hiring-app-argocd.git main
                         '''                        
                       }
                   }

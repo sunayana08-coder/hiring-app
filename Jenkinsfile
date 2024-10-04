@@ -32,8 +32,12 @@ pipeline {
                    withCredentials([usernamePassword(credentialsId: 'Github', passwordVariable: 'Git_Passwd', usernameVariable: 'Git_User')]) { 
                         sh '''
                         cat /var/lib/jenkins/workspace/$JOB_NAME/dev/deployment.yaml
-                        sed -i "s/5/${BUILD_NUMBER}/g" /var/lib/jenkins/workspace/$JOB_NAME/dev/deployment.yaml
-                        cat /var/lib/jenkins/workspace/$JOB_NAME/dev/deployment.yaml
+                       echo "Before sed command:"
+                    sh 'cat /var/lib/jenkins/workspace/docker-push/dev/deployment.yaml'
+                    sh 'sed -i s/5/4/g /var/lib/jenkins/workspace/docker-push/dev/deployment.yaml'
+                    echo "After sed command:"
+                    sh 'cat /var/lib/jenkins/workspace/docker-push/dev/deployment.yaml'
+
                         git add .
                         git commit -m 'Updated the deploy yaml | Jenkins Pipeline'
                         git remote -v
